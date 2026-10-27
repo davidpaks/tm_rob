@@ -2,31 +2,48 @@ name: '04 – Közlekedési lámpa'
 version: 1
 author: 'Dave'
 
+# Az Arduino lábát (a kód működését) és a LED anódját (a bekötést: vezeték,
+# próbapanel, ellenállás) is ellenőrzi. A GND-ág hiányát a szimuláció nem jelzi.
 # Egy teljes ciklus (8 s) minden fázisát középen ellenőrzi, majd a visszatérést pirosra.
 # Lábak: piros = 10, sárga = 9, zöld = 8.
 steps:
   # piros (0–3 s)
   - delay: 1500ms
   - expect-pin: { part-id: uno, pin: '10', value: 1 }
+  - expect-pin: { part-id: piros, pin: 'A', value: 1 }
   - expect-pin: { part-id: uno, pin: '9', value: 0 }
+  - expect-pin: { part-id: sarga, pin: 'A', value: 0 }
   - expect-pin: { part-id: uno, pin: '8', value: 0 }
+  - expect-pin: { part-id: zold, pin: 'A', value: 0 }
   # piros + sárga (3–4 s)
   - delay: 2000ms
   - expect-pin: { part-id: uno, pin: '10', value: 1 }
+  - expect-pin: { part-id: piros, pin: 'A', value: 1 }
   - expect-pin: { part-id: uno, pin: '9', value: 1 }
+  - expect-pin: { part-id: sarga, pin: 'A', value: 1 }
   - expect-pin: { part-id: uno, pin: '8', value: 0 }
+  - expect-pin: { part-id: zold, pin: 'A', value: 0 }
   # zöld (4–7 s)
   - delay: 2000ms
   - expect-pin: { part-id: uno, pin: '10', value: 0 }
+  - expect-pin: { part-id: piros, pin: 'A', value: 0 }
   - expect-pin: { part-id: uno, pin: '9', value: 0 }
+  - expect-pin: { part-id: sarga, pin: 'A', value: 0 }
   - expect-pin: { part-id: uno, pin: '8', value: 1 }
+  - expect-pin: { part-id: zold, pin: 'A', value: 1 }
   # sárga (7–8 s)
   - delay: 2000ms
   - expect-pin: { part-id: uno, pin: '10', value: 0 }
+  - expect-pin: { part-id: piros, pin: 'A', value: 0 }
   - expect-pin: { part-id: uno, pin: '9', value: 1 }
+  - expect-pin: { part-id: sarga, pin: 'A', value: 1 }
   - expect-pin: { part-id: uno, pin: '8', value: 0 }
+  - expect-pin: { part-id: zold, pin: 'A', value: 0 }
   # újra piros
   - delay: 2000ms
   - expect-pin: { part-id: uno, pin: '10', value: 1 }
+  - expect-pin: { part-id: piros, pin: 'A', value: 1 }
   - expect-pin: { part-id: uno, pin: '9', value: 0 }
+  - expect-pin: { part-id: sarga, pin: 'A', value: 0 }
   - expect-pin: { part-id: uno, pin: '8', value: 0 }
+  - expect-pin: { part-id: zold, pin: 'A', value: 0 }

@@ -47,9 +47,10 @@ TIPUSOK = {
     "wokwi-lcd1602": "16×2 LCD",
     "wokwi-buzzer": "zümmer",
     "wokwi-breadboard": "próbapanel",
-    "wokwi-breadboard-half": "fél próbapanel",
+    "wokwi-breadboard-half": "próbapanel (fél méretű, 30 oszlopos)",
     "wokwi-breadboard-mini": "mini próbapanel",
 }
+SINEK = {"tp": "felső + sín", "tn": "felső − sín", "bp": "alsó + sín", "bn": "alsó − sín"}
 LABAK = {
     "wokwi-led": {"A": "anód (+)", "C": "katód (−)"},
     "wokwi-resistor": {"1": "1. láb", "2": "2. láb"},
@@ -87,6 +88,8 @@ def part_names(parts: list[dict]) -> dict[str, str]:
         t = p["type"]
         if t == "wokwi-arduino-uno":
             names[p["id"]] = "Arduino"
+        elif is_breadboard(t):
+            names[p["id"]] = "próbapanel"
         elif t == "wokwi-resistor":
             names[p["id"]] = f"{p['id'].upper()} ({ohm(p.get('attrs', {}).get('value', '1000'))})"
         else:
@@ -97,11 +100,25 @@ def part_names(parts: list[dict]) -> dict[str, str]:
     return {i: (f"{n} ({i})" if counts[n] > 1 else n) for i, n in names.items()}
 
 
+def is_breadboard(part_type: str) -> bool:
+    return part_type.startswith("wokwi-breadboard")
+
+
+def is_bb_connection(conn: list) -> bool:
+    """A Wokwi így jelöli, ha egy alkatrész lába közvetlenül a próbapanelbe van dugva."""
+    return len(conn) > 3 and conn[3] == ["$bb"]
+
+
 def pin_label(part_type: str, pin: str) -> str:
     if part_type == "wokwi-arduino-uno":
         if pin.isdigit():
             return f"D{pin}"
         return pin.split(".")[0]  # GND.1 -> GND
+    if is_breadboard(part_type):
+        hole, rail = pin.split(".")
+        if hole in SINEK:
+            return SINEK[hole]  # bn.6 -> alsó − sín
+        return f"{rail}{hole[:-1]}"  # 13b.j -> j13
     return LABAK.get(part_type, {}).get(pin, pin)
 
 
@@ -110,7 +127,28 @@ def parts_list(diagram: dict) -> str:
     for p in diagram["parts"]:
         d = describe(p)
         counts[d] = counts.get(d, 0) + 1
+    wires = sum(1 for c in diagram["connections"] if not is_bb_connection(c))
+    if wires and any(is_breadboard(p["type"]) for p in diagram["parts"]):
+        counts["vezeték (jumper)"] = wires
     return "".join(f"<li>{n} db {e(d)}</li>" for d, n in counts.items())
+
+
+def placement_table(diagram: dict) -> str:
+    """Melyik alkatrész melyik lába melyik próbapanel-lyukba kerül."""
+    types = {p["id"]: p["type"] for p in diagram["parts"]}
+    names = part_names(diagram["parts"])
+    holes: dict[str, list[str]] = {}
+    for a, b, *_ in filter(is_bb_connection, diagram["connections"]):
+        pid, pin = a.split(":", 1)
+        bid, hole = b.split(":", 1)
+        holes.setdefault(pid, []).append(
+            f"{e(pin_label(types[pid], pin))} → <strong>{e(pin_label(types[bid], hole))}</strong>")
+    if not holes:
+        return ""
+    rows = "".join(f"<tr><td>{e(names[pid])}</td><td>{', '.join(h)}</td></tr>" for pid, h in holes.items())
+    return ('<h3>Elhelyezés a próbapanelen</h3><div class="table-scroll"><table class="wiring placement">'
+            "<thead><tr><th>Alkatrész</th><th>Lábak helye</th></tr></thead>"
+            f"<tbody>{rows}</tbody></table></div>")
 
 
 def wiring_table(diagram: dict) -> str:
@@ -121,12 +159,13 @@ def wiring_table(diagram: dict) -> str:
         pid, pin = ref.split(":", 1)
         return f"{e(names[pid])} – <strong>{e(pin_label(types[pid], pin))}</strong>"
 
+    wires = [c for c in diagram["connections"] if not is_bb_connection(c)]
     rows = "".join(
         f"<tr><td>{i}.</td><td>{end(a)}</td><td>{end(b)}</td>"
         f'<td><span class="wire" style="background:{e(color)}"></span>{e(SZINEK.get(color, color))}</td></tr>'
-        for i, (a, b, color, *_) in enumerate(diagram["connections"], 1))
-    return ('<table class="wiring"><thead><tr><th></th><th>Honnan</th><th>Hova</th><th>Vezeték</th></tr></thead>'
-            f"<tbody>{rows}</tbody></table>")
+        for i, (a, b, color, *_) in enumerate(wires, 1))
+    return ('<h3>Vezetékek</h3><div class="table-scroll"><table class="wiring"><thead><tr><th></th><th>Honnan</th>'
+            f"<th>Hova</th><th>Vezeték</th></tr></thead><tbody>{rows}</tbody></table></div>")
 
 
 # --- README ---
@@ -215,11 +254,13 @@ code,.chip,pre{font-family:var(--mono);font-size:.82em}
 .section>h2{font-size:1.2rem;margin:0 0 12px}
 .section-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
 .section-head h2{font-size:1.2rem;margin:0}
+.section h3{font-size:1rem;margin:20px 0 6px}
 .readme h2{font-size:1.1rem;margin:20px 0 6px}
 .readme h2:first-child{margin-top:0}
 .readme table,.wiring{border-collapse:collapse;width:100%;font-size:.95rem}
 .readme th,.readme td,.wiring th,.wiring td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 .wiring td:first-child{color:var(--muted);width:2.5em;font-variant-numeric:tabular-nums}
+.placement td:first-child{color:var(--ink);width:auto;white-space:nowrap}
 .table-scroll{overflow-x:auto}
 .wire{display:inline-block;width:22px;height:6px;border-radius:3px;margin-right:8px;vertical-align:.15em;box-shadow:0 0 0 1px var(--line)}
 .parts{margin:0;padding-left:1.2em}
@@ -245,6 +286,53 @@ footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);f
 # a vezetékeket egy SVG-rétegre rajzolja (a Wokwi-féle 'v'/'h' útvonal-utasításokkal).
 FIGURE_JS = """
 const PAD = 24;
+const NS = 'http://www.w3.org/2000/svg';
+
+// A wokwi-elements nem tartalmaz próbapanelt, ezért ez a Wokwi-szerkesztő fél próbapanelét
+// rajzolja újra, azonos lyukkiosztással (9,6 px-es raszter, 30 oszlop, sínenként 25 lyuk).
+const P = 9.6;
+const BB_ROWS = 'abcdefghij';
+const BB_RAILS = { tp: 12.3, tn: 22.3, bp: 186.3, bn: 196.3 };
+class BreadboardHalf extends HTMLElement {
+  updateComplete = Promise.resolve();
+
+  get pinInfo() {
+    const pins = [];
+    [...BB_ROWS].forEach((row, t) => {
+      const y = 51 + t * P + (t >= 5 ? 2 * P : 0);
+      for (let c = 1; c <= 30; c++) pins.push({ name: `${c}${t >= 5 ? 'b' : 't'}.${row}`, x: 26 + (c - 1) * P, y });
+    });
+    for (const [rail, y] of Object.entries(BB_RAILS)) {
+      for (let r = 0; r < 25; r++) pins.push({ name: `${rail}.${r + 1}`, x: 34 + r * P + Math.floor(r / 5) * P, y });
+    }
+    return pins;
+  }
+
+  connectedCallback() {
+    const holes = this.pinInfo.map((p) => `<rect x="${p.x - 1.9}" y="${p.y - 1.9}" width="3.8" height="3.8" rx=".6"/>`);
+    const label = (x, y, s) => `<text x="${x}" y="${y}">${s}</text>`;
+    const letters = [...BB_ROWS].flatMap((r, t) => {
+      const y = 53.5 + t * P + (t >= 5 ? 2 * P : 0);
+      return [label(14, y, r), label(312, y, r)];
+    });
+    const numbers = [1, 5, 10, 15, 20, 25, 30].flatMap((c) => {
+      const x = 26 + (c - 1) * P - (c < 10 ? 2 : 4);
+      return [label(x, 43, c), label(x, 169, c)];
+    });
+    const line = (y, color) => `<rect x="36.5" y="${y}" width="264.6" height="1" fill="${color}" opacity=".7"/>`;
+    this.innerHTML = `<svg xmlns="${NS}" width="328.8" height="207.9" viewBox="0 0 328.8 207.9" style="display:block">
+      <rect width="328.8" height="207.9" rx="3" fill="${this.getAttribute('color') || '#eeefed'}"/>
+      <rect x="5.7" y="100" width="317.5" height="7" fill="#e3e3e3"/>
+      ${line(5, '#F97466')}${line(30, '#55d2fd')}${line(176, '#F97466')}${line(203, '#55d2fd')}
+      <g fill="#555" opacity=".55">${holes.join('')}</g>
+      <g font-size="7" font-family="sans-serif" fill="#000" opacity=".55">${letters.join('')}${numbers.join('')}</g>
+      <g font-size="10" font-family="sans-serif" font-weight="bold">
+        <text x="12" y="16" fill="#F97466">+</text><text x="12" y="26" fill="#55d2fd">−</text>
+        <text x="12" y="190" fill="#F97466">+</text><text x="12" y="200" fill="#55d2fd">−</text>
+      </g></svg>`;
+  }
+}
+customElements.define('wokwi-breadboard-half', BreadboardHalf);
 
 function rotate([x, y], [cx, cy], deg) {
   const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
@@ -295,12 +383,12 @@ async function draw(fig) {
     return [p.left + x, p.top + y];
   };
 
-  const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', 'wires');
   svg.setAttribute('width', '1');
   svg.setAttribute('height', '1');
   for (const [a, b, color, hints = []] of diagram.connections) {
+    if (hints.length === 1 && hints[0] === '$bb') continue;  // a próbapanelbe dugott láb, nem vezeték
     const star = hints.indexOf('*');
     const fromA = route(pin(a), star < 0 ? hints : hints.slice(0, star));
     const fromB = star < 0 ? [pin(b)] : route(pin(b), hints.slice(star + 1).reverse()).reverse();
@@ -386,7 +474,7 @@ def task_page(task: Path, title: str, readme_html: str, lessons: list) -> str:
               '<p class="figure-note">Az ábra a diagram.json alapján készül; a vezetékek elrendezése '
               'eltérhet a Wokwi-szerkesztőben látottól.</p>')
     if diagram["connections"]:
-        wiring = f'{figure}<div class="table-scroll">{wiring_table(diagram)}</div>'
+        wiring = figure + placement_table(diagram) + wiring_table(diagram)
     else:
         wiring = f"{figure}<p>Ehhez a feladathoz nincs szükség külső bekötésre.</p>"
 
