@@ -1,0 +1,15 @@
+name: '03 – Két LED felváltva'
+version: 1
+author: 'Dave'
+
+# Minden ellenőrzésnél pontosan az egyik LED ég.
+steps:
+  - delay: 500ms
+  - expect-pin: { part-id: uno, pin: '8', value: 1 }
+  - expect-pin: { part-id: uno, pin: '9', value: 0 }
+  - delay: 1000ms
+  - expect-pin: { part-id: uno, pin: '8', value: 0 }
+  - expect-pin: { part-id: uno, pin: '9', value: 1 }
+  - delay: 1000ms
+  - expect-pin: { part-id: uno, pin: '8', value: 1 }
+  - expect-pin: { part-id: uno, pin: '9', value: 0 }

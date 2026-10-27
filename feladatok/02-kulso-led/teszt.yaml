@@ -1,0 +1,13 @@
+name: '02 – Külső LED villogtatása'
+version: 1
+author: 'Dave'
+
+steps:
+  - delay: 500ms
+  - expect-pin: { part-id: uno, pin: '8', value: 1 }
+  - delay: 1000ms
+  - expect-pin: { part-id: uno, pin: '8', value: 0 }
+  - delay: 1000ms
+  - expect-pin: { part-id: uno, pin: '8', value: 1 }
+  - delay: 1000ms
+  - expect-pin: { part-id: uno, pin: '8', value: 0 }
