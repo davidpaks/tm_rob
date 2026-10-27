@@ -1,0 +1,23 @@
+name: '09 – Távolságmérő tartománnyal'
+version: 1
+author: 'davidpaks'
+
+# Az LCD képét összeveti a referencia/ mappában lévő képekkel, így a kódot és a bekötést
+# (I2C, szenzor) együtt ellenőrzi. A referenciaképek a mintamegoldás futtatásából készültek.
+# Tartományon kívül (1 cm, 450 cm), 1 m alatt (cm-ben) és felett (m-ben).
+steps:
+  - set-control: { part-id: ultrasonic1, control: distance, value: 1 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/1cm-kivul.png }
+  - set-control: { part-id: ultrasonic1, control: distance, value: 57 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/57cm.png }
+  - set-control: { part-id: ultrasonic1, control: distance, value: 250 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/250cm.png }
+  - set-control: { part-id: ultrasonic1, control: distance, value: 350 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/350cm.png }
+  - set-control: { part-id: ultrasonic1, control: distance, value: 450 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/450cm-kivul.png }

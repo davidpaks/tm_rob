@@ -1,0 +1,11 @@
+name: '07 – LCD kiírás'
+version: 1
+author: 'davidpaks'
+
+# Az LCD képét összeveti a referencia/ mappában lévő képekkel, így a kódot és a bekötést
+# (I2C, szenzor) együtt ellenőrzi. A referenciaképek a mintamegoldás futtatásából készültek.
+steps:
+  - delay: 1500ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/eltelt-1s.png }
+  - delay: 2000ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/eltelt-3s.png }

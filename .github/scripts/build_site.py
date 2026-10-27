@@ -48,7 +48,8 @@ TIPUSOK = {
     "wokwi-pushbutton": "nyomógomb",
     "wokwi-potentiometer": "potméter",
     "wokwi-slide-potentiometer": "tolópotméter",
-    "wokwi-lcd1602": "16×2 LCD",
+    "wokwi-lcd1602": "16×2 LCD kijelző (I2C)",
+    "wokwi-hc-sr04": "HC-SR04 ultrahangos távolságmérő",
     "wokwi-buzzer": "zümmer",
     "wokwi-7segment": "7 szegmenses kijelző",
     "wokwi-breadboard": "próbapanel",
@@ -60,6 +61,8 @@ LABAK = {
     "wokwi-led": {"A": "anód (+)", "C": "katód (−)"},
     "wokwi-resistor": {"1": "1. láb", "2": "2. láb"},
     "wokwi-potentiometer": {"GND": "GND", "SIG": "csúszka (SIG)", "VCC": "VCC"},
+    "wokwi-lcd1602": {"GND": "GND", "VCC": "VCC", "SDA": "SDA", "SCL": "SCL"},
+    "wokwi-hc-sr04": {"VCC": "VCC", "TRIG": "TRIG", "ECHO": "ECHO", "GND": "GND"},
     "wokwi-7segment": {**{s: f"{s} szegmens" for s in "ABCDEFG"}, "DP": "tizedespont (DP)",
                        "COM.1": "közös (COM)", "COM.2": "közös (COM)"},
 }
@@ -102,6 +105,10 @@ def part_names(parts: list[dict]) -> dict[str, str]:
             names[p["id"]] = "próbapanel"
         elif t == "wokwi-7segment":
             names[p["id"]] = "kijelző"
+        elif t == "wokwi-lcd1602":
+            names[p["id"]] = "LCD"
+        elif t == "wokwi-hc-sr04":
+            names[p["id"]] = "távolságmérő"
         elif t == "wokwi-resistor":
             names[p["id"]] = f"{p['id'].upper()} ({ohm(p.get('attrs', {}).get('value', '1000'))})"
         else:
@@ -125,6 +132,8 @@ def pin_label(part_type: str, pin: str) -> str:
     if part_type == "wokwi-arduino-uno":
         if pin.isdigit():
             return f"D{pin}"
+        if pin.startswith("A") and pin[1:].isdigit():
+            return {"A4": "A4 (SDA)", "A5": "A5 (SCL)"}.get(pin, pin)
         return pin.split(".")[0]  # GND.1 -> GND
     if is_breadboard(part_type):
         hole, rail = pin.split(".")

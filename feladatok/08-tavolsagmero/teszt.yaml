@@ -1,0 +1,16 @@
+name: '08 – Távolságmérő'
+version: 1
+author: 'davidpaks'
+
+# Az LCD képét összeveti a referencia/ mappában lévő képekkel, így a kódot és a bekötést
+# (I2C, szenzor) együtt ellenőrzi. A referenciaképek a mintamegoldás futtatásából készültek.
+steps:
+  - set-control: { part-id: ultrasonic1, control: distance, value: 25 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/25cm.png }
+  - set-control: { part-id: ultrasonic1, control: distance, value: 150 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/150cm.png }
+  - set-control: { part-id: ultrasonic1, control: distance, value: 320 }
+  - delay: 1200ms
+  - take-screenshot: { part-id: lcd1, compare-with: referencia/320cm.png }

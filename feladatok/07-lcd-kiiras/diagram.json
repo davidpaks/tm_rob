@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "author": "davidpaks",
+  "editor": "wokwi",
+  "parts": [
+    {"type": "wokwi-breadboard-half", "id": "bb1", "top": -240.0, "left": 2.6, "attrs": {}},
+    {"type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {}},
+    {"type": "wokwi-lcd1602", "id": "lcd1", "top": -40, "left": 345, "attrs": {"pins": "i2c"}}
+  ],
+  "connections": [
+    ["uno:5V", "bb1:bp.1", "red", ["v14", "h-180", "v-259.2"]],
+    ["bb1:bn.8", "uno:GND.1", "black", ["v31.7", "h2.1"]],
+    ["bb1:bn.25", "lcd1:GND", "black", ["h25.0", "v35.7"]],
+    ["bb1:bp.25", "lcd1:VCC", "red", ["h32.6", "v55.2"]],
+    ["uno:A4", "lcd1:SDA", "blue", ["v12", "h74", "v-192.5"]],
+    ["uno:A5", "lcd1:SCL", "purple", ["v20", "h71.5", "v-191.0"]]
+  ],
+  "dependencies": {}
+}

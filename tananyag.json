@@ -12,15 +12,15 @@
       "allapot": "kesz"
     },
     {
+      "nev": "LCD kijelző és távolságmérő",
+      "allapot": "kesz"
+    },
+    {
       "nev": "Nyomógombok",
       "allapot": "kesobb"
     },
     {
       "nev": "Potméter és PWM",
-      "allapot": "kesobb"
-    },
-    {
-      "nev": "16×2 LCD (I2C)",
       "allapot": "kesobb"
     }
   ],
@@ -72,6 +72,34 @@
         {
           "mappa": "06-hetszegmens-szamlalo",
           "szerep": "órai"
+        }
+      ]
+    },
+    {
+      "cim": "I2C-s LCD kijelző és ultrahangos távolságmérő",
+      "kulcsszavak": [
+        "I2C (SDA, SCL)",
+        "LiquidCrystal_I2C",
+        "lcd.setCursor()",
+        "lcd.print()",
+        "HC-SR04",
+        "pulseIn()",
+        "float",
+        "if – else if – else"
+      ],
+      "feladatok": [
+        {
+          "mappa": "07-lcd-kiiras",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "08-tavolsagmero",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "09-tavolsagmero-tartomany",
+          "szerep": "gyakorló",
+          "megjegyzes": "Önálló feladat: mérési tartomány, cm / m"
         }
       ]
     }
