@@ -1,9 +1,19 @@
 # Robotika – bevezető feladatok
 
-Arduino Uno feladatok [Wokwi](https://wokwi.com) szimulációval.
+Arduino Uno feladatok tanegységenként, mintamegoldással és bekötési ábrával. Az áramkörök a [Wokwi](https://wokwi.com) online szimulátorban is kipróbálhatók.
 
-## 1. óra – LED-ek
-1. [A beépített LED villogtatása](feladatok/01-beepitett-led/)
-2. [Külső LED rákötése](feladatok/02-kulso-led/)
-3. [Két LED villogtatása felváltva](feladatok/03-ket-led-felvaltva/)
-4. [Közlekedési lámpa](feladatok/04-kozlekedesi-lampa/)
+**A tananyag böngészőben: https://davidpaks.github.io/tm_rob/**
+
+## Mi található az oldalon?
+
+Minden feladatnál:
+
+- a feladat leírása és az elvárt működés,
+- az alkatrészlista, a bekötési ábra és a bekötési táblázat,
+- a mintamegoldás, valamint a **Wokwi-projekt** (.zip: `sketch.ino` + `diagram.json`).
+
+## Tanegységek
+
+| Tanegység | Téma | Feladatok |
+|---|---|---|
+| 1. | LED-ek vezérlése | [Beépített LED](feladatok/01-beepitett-led/), [Külső LED](feladatok/02-kulso-led/), [Két LED felváltva](feladatok/03-ket-led-felvaltva/), [Közlekedési lámpa](feladatok/04-kozlekedesi-lampa/) |

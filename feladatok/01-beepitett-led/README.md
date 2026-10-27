@@ -3,9 +3,6 @@
 ## Cél
 Az első Arduino-program megírása: a lapra gyárilag szerelt LED villogtatása.
 
-## Alkatrészek
-- Arduino Uno
-
 ## Elvárt működés
 A beépített LED (13-as láb, `LED_BUILTIN`) 1 másodpercig világít, majd 1 másodpercig nem, és ez ismétlődik.
 

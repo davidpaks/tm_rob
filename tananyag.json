@@ -1,0 +1,23 @@
+{
+  "_megjegyzes": "Az oldal ebből a fájlból tudja, melyik feladat melyik tanegységhez tartozik. Új tanegység után ide kell felvenni. A 'mappa' a feladatok alatti mappa neve; a 'szerep' 'órai' vagy 'gyakorló'. Ami egyik tanegységhez sincs rendelve, az 'További feladatok' alatt jelenik meg.",
+  "cim": "Robotika",
+  "alcim": "Arduino Uno feladatok tanegységenként, mintamegoldással és bekötési ábrával. Az áramkörök a Wokwi online szimulátorban is kipróbálhatók. Előismeret nem szükséges.",
+  "tanulasi_ut": [
+    { "nev": "LED-ek", "allapot": "kesz" },
+    { "nev": "Nyomógombok", "allapot": "kesobb" },
+    { "nev": "Potméter és PWM", "allapot": "kesobb" },
+    { "nev": "16×2 LCD (I2C)", "allapot": "kesobb" }
+  ],
+  "orak": [
+    {
+      "cim": "LED-ek vezérlése",
+      "kulcsszavak": ["setup()", "loop()", "pinMode()", "digitalWrite()", "delay()", "LED_BUILTIN", "előtétellenállás"],
+      "feladatok": [
+        { "mappa": "01-beepitett-led", "szerep": "órai" },
+        { "mappa": "02-kulso-led", "szerep": "órai" },
+        { "mappa": "03-ket-led-felvaltva", "szerep": "órai" },
+        { "mappa": "04-kozlekedesi-lampa", "szerep": "órai" }
+      ]
+    }
+  ]
+}
