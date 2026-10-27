@@ -3,20 +3,76 @@
   "cim": "Robotika",
   "alcim": "Arduino Uno feladatok tanegységenként, mintamegoldással és bekötési ábrával. Az áramkörök a Wokwi online szimulátorban is kipróbálhatók. Előismeret nem szükséges.",
   "tanulasi_ut": [
-    { "nev": "LED-ek", "allapot": "kesz" },
-    { "nev": "Nyomógombok", "allapot": "kesobb" },
-    { "nev": "Potméter és PWM", "allapot": "kesobb" },
-    { "nev": "16×2 LCD (I2C)", "allapot": "kesobb" }
+    {
+      "nev": "LED-ek",
+      "allapot": "kesz"
+    },
+    {
+      "nev": "7 szegmenses kijelző",
+      "allapot": "kesz"
+    },
+    {
+      "nev": "Nyomógombok",
+      "allapot": "kesobb"
+    },
+    {
+      "nev": "Potméter és PWM",
+      "allapot": "kesobb"
+    },
+    {
+      "nev": "16×2 LCD (I2C)",
+      "allapot": "kesobb"
+    }
   ],
   "orak": [
     {
       "cim": "LED-ek vezérlése",
-      "kulcsszavak": ["setup()", "loop()", "pinMode()", "digitalWrite()", "delay()", "LED_BUILTIN", "előtétellenállás"],
+      "kulcsszavak": [
+        "setup()",
+        "loop()",
+        "pinMode()",
+        "digitalWrite()",
+        "delay()",
+        "LED_BUILTIN",
+        "előtétellenállás"
+      ],
       "feladatok": [
-        { "mappa": "01-beepitett-led", "szerep": "órai" },
-        { "mappa": "02-kulso-led", "szerep": "órai" },
-        { "mappa": "03-ket-led-felvaltva", "szerep": "órai" },
-        { "mappa": "04-kozlekedesi-lampa", "szerep": "órai" }
+        {
+          "mappa": "01-beepitett-led",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "02-kulso-led",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "03-ket-led-felvaltva",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "04-kozlekedesi-lampa",
+          "szerep": "órai"
+        }
+      ]
+    },
+    {
+      "cim": "7 szegmenses kijelző",
+      "kulcsszavak": [
+        "közös katód",
+        "kétdimenziós tömb",
+        "függvény paraméterrel",
+        "void display(int szam)",
+        "if"
+      ],
+      "feladatok": [
+        {
+          "mappa": "05-hetszegmens-szam",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "06-hetszegmens-szamlalo",
+          "szerep": "órai"
+        }
       ]
     }
   ]

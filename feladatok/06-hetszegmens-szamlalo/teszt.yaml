@@ -1,0 +1,107 @@
+name: '06 – Számlálás 0–9'
+version: 1
+author: 'davidpaks'
+
+# A kijelző szegmenslábait ellenőrzi, így a kód és a jelút (vezeték, próbapanel,
+# ellenállás) hibáját is jelzi. A közös katód (GND) hiányát a szimuláció nem jelzi.
+# Másodpercenként vált; minden számot a váltások között félúton ellenőriz, a 9 után a 0-t is.
+steps:
+  - delay: 500ms
+  # 0
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  - delay: 1000ms
+  # 1
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  - delay: 1000ms
+  # 2
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 3
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 4
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 5
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 6
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 7
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  - delay: 1000ms
+  # 8
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 9
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  - delay: 1000ms
+  # 0
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }

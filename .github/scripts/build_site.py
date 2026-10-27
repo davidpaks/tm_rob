@@ -50,6 +50,7 @@ TIPUSOK = {
     "wokwi-slide-potentiometer": "tolópotméter",
     "wokwi-lcd1602": "16×2 LCD",
     "wokwi-buzzer": "zümmer",
+    "wokwi-7segment": "7 szegmenses kijelző",
     "wokwi-breadboard": "próbapanel",
     "wokwi-breadboard-half": "próbapanel (fél méretű, 30 oszlopos)",
     "wokwi-breadboard-mini": "mini próbapanel",
@@ -59,6 +60,8 @@ LABAK = {
     "wokwi-led": {"A": "anód (+)", "C": "katód (−)"},
     "wokwi-resistor": {"1": "1. láb", "2": "2. láb"},
     "wokwi-potentiometer": {"GND": "GND", "SIG": "csúszka (SIG)", "VCC": "VCC"},
+    "wokwi-7segment": {**{s: f"{s} szegmens" for s in "ABCDEFG"}, "DP": "tizedespont (DP)",
+                       "COM.1": "közös (COM)", "COM.2": "közös (COM)"},
 }
 
 
@@ -81,6 +84,9 @@ def describe(p: dict) -> str:
         return f"{SZINEK.get(attrs.get('color', 'red'), attrs.get('color'))} LED"
     if t == "wokwi-resistor":
         return f"{ohm(attrs.get('value', '1000'))}-os ellenállás"
+    if t == "wokwi-7segment":
+        common = "közös katódos" if attrs.get("common") == "cathode" else "közös anódos"
+        return f"{name} ({common})"
     return name
 
 
@@ -94,6 +100,8 @@ def part_names(parts: list[dict]) -> dict[str, str]:
             names[p["id"]] = "Arduino"
         elif is_breadboard(t):
             names[p["id"]] = "próbapanel"
+        elif t == "wokwi-7segment":
+            names[p["id"]] = "kijelző"
         elif t == "wokwi-resistor":
             names[p["id"]] = f"{p['id'].upper()} ({ohm(p.get('attrs', {}).get('value', '1000'))})"
         else:

@@ -1,0 +1,16 @@
+name: '05 – Szám kiírása'
+version: 1
+author: 'davidpaks'
+
+# A kijelző szegmenslábait ellenőrzi, így a kód és a jelút (vezeték, próbapanel,
+# ellenállás) hibáját is jelzi. A közös katód (GND) hiányát a szimuláció nem jelzi.
+steps:
+  - delay: 500ms
+  # 5
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
