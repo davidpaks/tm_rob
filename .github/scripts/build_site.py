@@ -3,11 +3,12 @@
 - A tananyag.json mondja meg, melyik feladat melyik tanegységhez tartozik.
 - Feladatonként a README.md adja a leírást, a diagram.json-ból generálódik
   az alkatrészlista, a bekötési táblázat és a bekötési ábra (wokwi-elements).
+- A sketch.ino színezve (Pygments, Arduino-lexer) jelenik meg a mintamegoldásnál.
 - Minden feladathoz letölthető .zip készül (sketch.ino + diagram.json), ami
   Wokwi-projektként megnyitható.
 
 Futtatás:  python3 .github/scripts/build_site.py  [kimeneti mappa, alapból _site]
-Függőség:  pip install markdown
+Függőség:  pip install markdown pygments
 """
 import html
 import json
@@ -18,6 +19,9 @@ import zipfile
 from pathlib import Path
 
 import markdown
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import ArduinoLexer
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "feladatok"
@@ -187,17 +191,23 @@ def number(task: Path) -> str:
 ICON_DL = '<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M8 2v8m0 0-3-3m3 3 3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 ICON_OPEN = '<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M9 3h4v4m0-4L7 9M11 10v3H3V5h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 
+DARK = """
+  --paper:#0f1626; --sheet:#162036; --ink:#e6ebf5; --muted:#9aa6c0; --line:#2a3754;
+  --cobalt:#8fb0ff; --cobalt-soft:#1e2c4d; --teal:#6fd3c0; --teal-soft:#15332f;
+  color-scheme:dark;
+"""
+
 CSS = """
 :root{
   --paper:#f2f5f9; --sheet:#ffffff; --ink:#14213d; --muted:#56607a; --line:#d6dde8;
   --cobalt:#2b59c3; --cobalt-soft:#e4ecfb; --teal:#0e6b5c; --teal-soft:#e0f1ed;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --sans:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root{
-  --paper:#0f1626; --sheet:#162036; --ink:#e6ebf5; --muted:#9aa6c0; --line:#2a3754;
-  --cobalt:#8fb0ff; --cobalt-soft:#1e2c4d; --teal:#6fd3c0; --teal-soft:#15332f;
-}}
+/* sötét mód: a rendszerbeállítás szerint, vagy ha a téma gombbal kézzel választották */
+:root[data-theme="dark"]{DARK}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){DARK}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans)}
@@ -269,8 +279,22 @@ code,.chip,pre{font-family:var(--mono);font-size:.82em}
 .figure .stage>*{position:absolute;line-height:0}
 .figure svg.wires{overflow:visible;pointer-events:none}
 .figure-note{margin:0 0 16px;font-size:.85rem;color:var(--muted)}
-details summary{cursor:pointer;font-weight:700;color:var(--cobalt)}
-pre{margin:12px 0 0;padding:14px 16px;background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow-x:auto;line-height:1.5}
+
+/* kód */
+.codebox{margin:4px 0 0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.codebar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 8px 6px 14px;background:var(--paper);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+.copy{font:inherit;font-family:var(--sans);font-weight:700;font-size:.85rem;padding:4px 10px;border:0;border-radius:6px;background:var(--cobalt-soft);color:var(--cobalt);cursor:pointer}
+.copy:hover{background:var(--cobalt);color:var(--sheet)}
+.copy:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
+.hl{overflow-x:auto}
+.hl pre{margin:0;padding:14px 16px;background:none;border:0;line-height:1.55;font-size:.86rem}
+/* téma gomb */
+.topbar{position:relative;height:0}
+.theme-toggle{position:absolute;top:14px;right:16px;z-index:1;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--sheet);color:var(--ink);font:inherit;font-size:.85rem;cursor:pointer}
+.theme-toggle:hover{border-color:var(--cobalt);color:var(--cobalt)}
+.theme-toggle:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
+.theme-toggle svg{width:16px;height:16px}
+.hl .linenos{display:inline-block;min-width:2em;margin-right:14px;text-align:right;color:var(--muted);opacity:.7;user-select:none}
 footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:.9rem}
 
 @media (max-width:560px){
@@ -416,6 +440,66 @@ async function draw(fig) {
 document.querySelectorAll('.figure').forEach(draw);
 """
 
+def highlight_ino(code: str) -> str:
+    return highlight(code, ArduinoLexer(), HtmlFormatter(cssclass="hl", linenos="inline"))
+
+
+def code_css() -> str:
+    """Világos módban az Arduino IDE színei, sötét módban a GitHub sötét témája."""
+    def defs(style: str, prefix: str) -> str:
+        f = HtmlFormatter(style=style)
+        return "\n".join(f.get_background_style_defs(prefix) + f.get_token_style_defs(prefix))
+    return (defs("arduino", ".hl") + "\n"
+            + defs("github-dark", ':root[data-theme="dark"] .hl')
+            + "\n@media (prefers-color-scheme:dark){\n"
+            + defs("github-dark", ':root:not([data-theme="light"]) .hl') + "\n}\n")
+
+
+# Másolás gomb: a sorszámok nélkül teszi a vágólapra a kódot.
+COPY_JS = """
+document.querySelectorAll('.codebox').forEach((box) => {
+  const btn = box.querySelector('.copy');
+  btn.addEventListener('click', async () => {
+    const pre = box.querySelector('pre').cloneNode(true);
+    pre.querySelectorAll('.linenos').forEach((n) => n.remove());
+    try {
+      await navigator.clipboard.writeText(pre.textContent);
+      btn.textContent = 'Másolva';
+    } catch {
+      btn.textContent = 'Nem sikerült';
+    }
+    setTimeout(() => { btn.textContent = 'Másolás'; }, 1500);
+  });
+});
+"""
+
+# Téma gomb: világos és sötét mód között vált; a választást a böngésző megjegyzi.
+# A <head>-ben lévő rövid szkript még a rajzolás előtt beállítja, hogy ne villanjon.
+THEME_HEAD = ("<script>try{var t=localStorage.getItem('tema');"
+              "if(t)document.documentElement.dataset.theme=t}catch(e){}</script>")
+ICON_MOON = '<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>'
+ICON_SUN = '<svg aria-hidden="true" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+THEME_JS = """
+const root = document.documentElement;
+const btn = document.querySelector('.theme-toggle');
+const system = matchMedia('(prefers-color-scheme: dark)');
+const current = () => root.dataset.theme || (system.matches ? 'dark' : 'light');
+
+function render() {
+  const dark = current() === 'dark';
+  btn.innerHTML = (dark ? '%SUN%' : '%MOON%') + `<span>${dark ? 'Világos mód' : 'Sötét mód'}</span>`;
+  btn.setAttribute('aria-label', dark ? 'Váltás világos módra' : 'Váltás sötét módra');
+}
+
+btn.addEventListener('click', () => {
+  root.dataset.theme = current() === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem('tema', root.dataset.theme); } catch (e) {}
+  render();
+});
+system.addEventListener('change', render);
+render();
+""".replace("%SUN%", ICON_SUN).replace("%MOON%", ICON_MOON)
+
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">'
          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700'
@@ -429,12 +513,15 @@ def page(title: str, body: str, base: str, scripts: str = "") -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
+{THEME_HEAD}
 {FONTS}
 <link rel="stylesheet" href="{base}assets/oldal.css">
 </head>
 <body>
+<div class="wrap topbar"><button class="theme-toggle" type="button">Téma</button></div>
 {body}
 <footer><div class="wrap">A feladatok forrásfájljai a <a href="{REPO_URL}">tm_rob GitHub repositoryban</a> is elérhetők.</div></footer>
+<script src="{base}assets/tema.js"></script>
 {scripts}
 </body>
 </html>
@@ -489,10 +576,11 @@ def task_page(task: Path, title: str, readme_html: str, lessons: list) -> str:
         f'<section class="section solution" id="mintamegoldas"><div class="section-head"><h2>Mintamegoldás</h2>'
         f'<div class="actions"><a class="btn" href="{zip_name(task)}" download>{ICON_DL}Wokwi-projekt (.zip)</a>'
         f'{files}</div></div>'
-        f'<details><summary>A program megjelenítése</summary><pre><code>{e(code)}</code></pre></details></section>'
+        f'<div class="codebox"><div class="codebar"><span>sketch.ino</span>'
+        f'<button class="copy" type="button">Másolás</button></div>{highlight_ino(code)}</div></section>'
         "</main>")
     scripts = (f'<script src="{WOKWI_ELEMENTS}"></script>'
-               '<script src="../../assets/bekotes.js"></script>')
+               '<script src="../../assets/bekotes.js"></script><script src="../../assets/kod.js"></script>')
     return page(f"{number(task)}. {title} – {DATA['cim']}", body, "../../", scripts)
 
 
@@ -500,7 +588,10 @@ def build():
     if OUT.exists():
         shutil.rmtree(OUT)
     (OUT / "assets").mkdir(parents=True)
-    (OUT / "assets" / "oldal.css").write_text(CSS.strip() + "\n", encoding="utf-8")
+    css = CSS.replace("{DARK}", "{" + DARK + "}")
+    (OUT / "assets" / "oldal.css").write_text(css.strip() + "\n\n" + code_css(), encoding="utf-8")
+    (OUT / "assets" / "tema.js").write_text(THEME_JS.strip() + "\n", encoding="utf-8")
+    (OUT / "assets" / "kod.js").write_text(COPY_JS.strip() + "\n", encoding="utf-8")
     (OUT / "assets" / "bekotes.js").write_text(FIGURE_JS.strip() + "\n", encoding="utf-8")
     (OUT / ".nojekyll").write_text("")
 

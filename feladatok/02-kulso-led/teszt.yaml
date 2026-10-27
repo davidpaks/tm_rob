@@ -1,6 +1,6 @@
 name: '02 – Külső LED villogtatása'
 version: 1
-author: 'Dave'
+author: 'davidpaks'
 
 # Az Arduino lábát (a kód működését) és a LED anódját (a bekötést: vezeték,
 # próbapanel, ellenállás) is ellenőrzi. A GND-ág hiányát a szimuláció nem jelzi.

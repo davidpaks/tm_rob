@@ -27,7 +27,7 @@ jobs:
           python-version: '3.12'
       - name: Oldal összerakása (leírások, alkatrészlisták, bekötések, zip-ek)
         run: |
-          pip install markdown==3.7
+          pip install markdown==3.7 pygments==2.19.1
           python3 .github/scripts/build_site.py _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

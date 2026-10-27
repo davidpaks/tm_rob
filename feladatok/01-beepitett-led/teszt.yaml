@@ -1,6 +1,6 @@
 name: '01 – Beépített LED villogtatása'
 version: 1
-author: 'Dave'
+author: 'davidpaks'
 
 # A LED 1 s-ig világít, 1 s-ig nem. Az ellenőrzések a váltások között félúton vannak.
 steps:
