@@ -28,6 +28,7 @@ Az oldal világos és sötét módban is olvasható; a jobb felső gombbal kézz
 | 1. | LED-ek vezérlése | [Beépített LED](feladatok/01-beepitett-led/), [Külső LED](feladatok/02-kulso-led/), [Két LED felváltva](feladatok/03-ket-led-felvaltva/), [Közlekedési lámpa](feladatok/04-kozlekedesi-lampa/) |
 | 2. | 7 szegmenses kijelző | [Szám kiírása](feladatok/05-hetszegmens-szam/), [Számlálás 0-tól 9-ig](feladatok/06-hetszegmens-szamlalo/) |
 | 3. | I2C-s LCD kijelző és ultrahangos távolságmérő | [Szöveg kiírása LCD-re](feladatok/07-lcd-kiiras/), [Távolságmérés](feladatok/08-tavolsagmero/), [Mérési tartomány figyelése](feladatok/09-tavolsagmero-tartomany/) (önálló feladat) |
+| 4. | Nyomógombok | [Gomb és LED](feladatok/10-gomb-led/), [Gomb kapcsolóként](feladatok/11-gomb-kapcsolo/), [Két gomb](feladatok/12-ket-gomb/), [Fel-le számláló](feladatok/13-fel-le-szamlalo/) (gyakorló feladatok) |
 
 ## A repository felépítése
 

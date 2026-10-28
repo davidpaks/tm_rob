@@ -17,7 +17,7 @@
     },
     {
       "nev": "Nyomógombok",
-      "allapot": "kesobb"
+      "allapot": "kesz"
     },
     {
       "nev": "Potméter és PWM",
@@ -100,6 +100,40 @@
           "mappa": "09-tavolsagmero-tartomany",
           "szerep": "gyakorló",
           "megjegyzes": "Önálló feladat: mérési tartomány, cm / m"
+        }
+      ]
+    },
+    {
+      "cim": "Nyomógombok",
+      "kulcsszavak": [
+        "pinMode(…, INPUT_PULLUP)",
+        "digitalRead()",
+        "if – else",
+        "bool",
+        "!",
+        "pergésmentesítés",
+        "millis()",
+        "unsigned long",
+        "tömb"
+      ],
+      "feladatok": [
+        {
+          "mappa": "10-gomb-led",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "11-gomb-kapcsolo",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "12-ket-gomb",
+          "szerep": "gyakorló",
+          "megjegyzes": "Két gomb: az egyik felkapcsol, a másik lekapcsol"
+        },
+        {
+          "mappa": "13-fel-le-szamlalo",
+          "szerep": "gyakorló",
+          "megjegyzes": "Két gomb és 7 szegmenses kijelző: fel-le számláló"
         }
       ]
     }

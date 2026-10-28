@@ -1,0 +1,21 @@
+name: '10 – Gomb és LED'
+version: 1
+author: 'davidpaks'
+
+# A gombot a szimulációban nyomja le és engedi fel, és a beépített LED (13-as láb)
+# állapotát ellenőrzi. Mivel a gomb a jelvezeték és a GND között kapcsol, a hiányzó
+# jelvezetéket és a hiányzó GND-t is jelzi.
+steps:
+  - delay: 200ms
+  # felengedve
+  - expect-pin: { part-id: uno, pin: '13', value: 0 }
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 200ms
+  # lenyomva
+  - expect-pin: { part-id: uno, pin: '13', value: 1 }
+  - delay: 500ms
+  - expect-pin: { part-id: uno, pin: '13', value: 1 }
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 200ms
+  # felengedve
+  - expect-pin: { part-id: uno, pin: '13', value: 0 }

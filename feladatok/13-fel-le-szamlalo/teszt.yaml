@@ -1,0 +1,89 @@
+name: '13 – Fel-le számláló'
+version: 1
+author: 'davidpaks'
+
+# A gombokat a szimulációban nyomja le és engedi fel, és a kijelző szegmenslábait ellenőrzi.
+# A gomb a jelvezeték és a GND között kapcsol, így a gombok hiányzó jelvezetékét és GND-jét is jelzi;
+# a kijelző közös katódjának (GND) hiányát nem.
+steps:
+  - delay: 300ms
+  # induláskor 0
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  # zöld: 1
+  - set-control: { part-id: btn_fel, control: pressed, value: 1 }
+  - delay: 200ms
+  - set-control: { part-id: btn_fel, control: pressed, value: 0 }
+  - delay: 300ms
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  # zöld hosszan nyomva: csak eggyel nő, 2
+  - set-control: { part-id: btn_fel, control: pressed, value: 1 }
+  - delay: 1000ms
+  - set-control: { part-id: btn_fel, control: pressed, value: 0 }
+  - delay: 300ms
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  # piros: 1
+  - set-control: { part-id: btn_le, control: pressed, value: 1 }
+  - delay: 200ms
+  - set-control: { part-id: btn_le, control: pressed, value: 0 }
+  - delay: 300ms
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  # piros: 0
+  - set-control: { part-id: btn_le, control: pressed, value: 1 }
+  - delay: 200ms
+  - set-control: { part-id: btn_le, control: pressed, value: 0 }
+  - delay: 300ms
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }
+  # piros 0-nál: körbe, 9
+  - set-control: { part-id: btn_le, control: pressed, value: 1 }
+  - delay: 200ms
+  - set-control: { part-id: btn_le, control: pressed, value: 0 }
+  - delay: 300ms
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 0 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 1 }
+  # zöld 9-nél: körbe, 0
+  - set-control: { part-id: btn_fel, control: pressed, value: 1 }
+  - delay: 200ms
+  - set-control: { part-id: btn_fel, control: pressed, value: 0 }
+  - delay: 300ms
+  - expect-pin: { part-id: sevseg1, pin: 'A', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'B', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'C', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'D', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'E', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'F', value: 1 }
+  - expect-pin: { part-id: sevseg1, pin: 'G', value: 0 }

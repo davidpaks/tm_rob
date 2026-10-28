@@ -46,6 +46,7 @@ TIPUSOK = {
     "wokwi-led": "LED",
     "wokwi-resistor": "ellenállás",
     "wokwi-pushbutton": "nyomógomb",
+    "wokwi-pushbutton-6mm": "nyomógomb (6×6 mm)",
     "wokwi-potentiometer": "potméter",
     "wokwi-slide-potentiometer": "tolópotméter",
     "wokwi-lcd1602": "16×2 LCD kijelző (I2C)",
@@ -62,6 +63,8 @@ LABAK = {
     "wokwi-resistor": {"1": "1. láb", "2": "2. láb"},
     "wokwi-potentiometer": {"GND": "GND", "SIG": "csúszka (SIG)", "VCC": "VCC"},
     "wokwi-lcd1602": {"GND": "GND", "VCC": "VCC", "SDA": "SDA", "SCL": "SCL"},
+    "wokwi-pushbutton": {"1.l": "1-es láb", "1.r": "1-es láb", "2.l": "2-es láb", "2.r": "2-es láb"},
+    "wokwi-pushbutton-6mm": {"1.l": "1-es láb", "1.r": "1-es láb", "2.l": "2-es láb", "2.r": "2-es láb"},
     "wokwi-hc-sr04": {"VCC": "VCC", "TRIG": "TRIG", "ECHO": "ECHO", "GND": "GND"},
     "wokwi-7segment": {**{s: f"{s} szegmens" for s in "ABCDEFG"}, "DP": "tizedespont (DP)",
                        "COM.1": "közös (COM)", "COM.2": "közös (COM)"},
@@ -87,6 +90,8 @@ def describe(p: dict) -> str:
         return f"{SZINEK.get(attrs.get('color', 'red'), attrs.get('color'))} LED"
     if t == "wokwi-resistor":
         return f"{ohm(attrs.get('value', '1000'))}-os ellenállás"
+    if t in ("wokwi-pushbutton", "wokwi-pushbutton-6mm") and attrs.get("color") in SZINEK:
+        return f"{SZINEK[attrs['color']]} {name}"
     if t == "wokwi-7segment":
         common = "közös katódos" if attrs.get("common") == "cathode" else "közös anódos"
         return f"{name} ({common})"
@@ -231,7 +236,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans)
 a{color:var(--cobalt);text-underline-offset:3px}
 a:focus-visible,summary:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px;border-radius:4px}
 .wrap{max-width:880px;margin:0 auto;padding:0 16px}
-code,.chip,pre{font-family:var(--mono);font-size:.82em}
+code,.chip,pre{font-family:var(--mono);font-size:.82em;font-variant-ligatures:none;font-feature-settings:"calt" 0,"liga" 0}
 
 /* fejléc */
 .hero{padding:56px 0 40px;border-bottom:1px solid var(--line)}
