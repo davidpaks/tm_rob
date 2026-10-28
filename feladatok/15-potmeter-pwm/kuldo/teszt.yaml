@@ -1,0 +1,14 @@
+name: '15 – Potméter és PWM: küldő'
+version: 1
+author: 'davidpaks'
+
+# A potmétert a szimulációban tekeri el, és a soros monitoron a küldött értéket ellenőrzi.
+# Ez a jelvezetéket (A0) és a potméter tápját (5 V, GND) is teszteli: e nélkül nem jönne ki 0 és 1023.
+steps:
+  - delay: 300ms
+  - set-control: { part-id: pot1, control: position, value: 1 }
+  - wait-serial: '1023'
+  - set-control: { part-id: pot1, control: position, value: 0.5 }
+  - wait-serial: '512'
+  - set-control: { part-id: pot1, control: position, value: 0 }
+  - wait-serial: '0'

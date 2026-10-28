@@ -1,0 +1,14 @@
+name: '14 – Szám küldése: fogadó'
+version: 1
+author: 'davidpaks'
+
+# A küldő Arduino helyett a szimuláció soros monitorán érkeznek a számok
+# (a küldő println()-je sorvégén "\r\n"-t küld), a választ ugyanott ellenőrzi.
+steps:
+  - delay: 200ms
+  - write-serial: "7\r\n"
+  - wait-serial: 'Kapott szám: 7'
+  - write-serial: "42\r\n"
+  - wait-serial: 'Kapott szám: 42'
+  - write-serial: "1234\r\n"
+  - wait-serial: 'Kapott szám: 1234'

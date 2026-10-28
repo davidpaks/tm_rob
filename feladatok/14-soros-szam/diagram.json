@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "author": "davidpaks",
+  "editor": "wokwi",
+  "parts": [
+    {"type": "wokwi-arduino-uno", "id": "fogado", "top": 0, "left": 0, "attrs": {}},
+    {"type": "wokwi-arduino-uno", "id": "kuldo", "top": 0, "left": 410, "attrs": {}}
+  ],
+  "connections": [
+    ["kuldo:1", "fogado:0", "orange", ["v-20", "h-400.5"]],
+    ["kuldo:GND.2", "fogado:GND.2", "black", ["v20", "h-410"]]
+  ],
+  "dependencies": {}
+}

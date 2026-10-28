@@ -20,8 +20,8 @@
       "allapot": "kesz"
     },
     {
-      "nev": "Potméter és PWM",
-      "allapot": "kesobb"
+      "nev": "Soros kommunikáció",
+      "allapot": "kesz"
     }
   ],
   "orak": [
@@ -134,6 +134,30 @@
           "mappa": "13-fel-le-szamlalo",
           "szerep": "gyakorló",
           "megjegyzes": "Két gomb és 7 szegmenses kijelző: fel-le számláló"
+        }
+      ]
+    },
+    {
+      "cim": "Soros kommunikáció (UART) két Arduino között",
+      "kulcsszavak": [
+        "TX → RX, közös GND",
+        "Serial.begin()",
+        "Serial.println()",
+        "Serial.available()",
+        "Serial.readStringUntil()",
+        "toInt()",
+        "analogRead()",
+        "map()",
+        "analogWrite() (PWM)"
+      ],
+      "feladatok": [
+        {
+          "mappa": "14-soros-szam",
+          "szerep": "órai"
+        },
+        {
+          "mappa": "15-potmeter-pwm",
+          "szerep": "órai"
         }
       ]
     }

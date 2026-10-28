@@ -6,6 +6,10 @@
 - A sketch.ino színezve (Pygments, Arduino-lexer) jelenik meg a mintamegoldásnál.
 - Minden feladathoz letölthető .zip készül (sketch.ino + diagram.json), ami
   Wokwi-projektként megnyitható.
+- Két Arduinós feladatnál (pl. soros kommunikáció) nincs sketch.ino: minden Arduino programja
+  a saját almappájában van (kuldo/kuldo.ino, fogado/fogado.ino), az almappa neve az Arduino
+  azonosítója a diagram.json-ban. Programonként külön .zip készül, mert a Wokwi egy
+  szimulációban csak az első Arduinót futtatja; a .zip-ben ez az Arduino áll elöl.
 
 Futtatás:  python3 .github/scripts/build_site.py  [kimeneti mappa, alapból _site]
 Függőség:  pip install markdown pygments
@@ -57,6 +61,8 @@ TIPUSOK = {
     "wokwi-breadboard-half": "próbapanel (fél méretű, 30 oszlopos)",
     "wokwi-breadboard-mini": "mini próbapanel",
 }
+# két Arduinós feladatnál a programok almappái (= az Arduinók azonosítói), ebben a sorrendben
+SZEREPEK = {"kuldo": "küldő", "fogado": "fogadó"}
 SINEK = {"tp": "felső + sín", "tn": "felső − sín", "bp": "alsó + sín", "bn": "alsó − sín"}
 LABAK = {
     "wokwi-led": {"A": "anód (+)", "C": "katód (−)"},
@@ -104,10 +110,11 @@ def part_names(parts: list[dict]) -> dict[str, str]:
     names = {}
     for p in parts:
         t = p["type"]
+        role = SZEREPEK.get(p["id"].removeprefix("bb_"))
         if t == "wokwi-arduino-uno":
-            names[p["id"]] = "Arduino"
+            names[p["id"]] = f"{role} Arduino" if role else "Arduino"
         elif is_breadboard(t):
-            names[p["id"]] = "próbapanel"
+            names[p["id"]] = f"{role} próbapanel" if role else "próbapanel"
         elif t == "wokwi-7segment":
             names[p["id"]] = "kijelző"
         elif t == "wokwi-lcd1602":
@@ -136,7 +143,7 @@ def is_bb_connection(conn: list) -> bool:
 def pin_label(part_type: str, pin: str) -> str:
     if part_type == "wokwi-arduino-uno":
         if pin.isdigit():
-            return f"D{pin}"
+            return {"0": "D0 (RX)", "1": "D1 (TX)"}.get(pin, f"D{pin}")
         if pin.startswith("A") and pin[1:].isdigit():
             return {"A4": "A4 (SDA)", "A5": "A5 (SCL)"}.get(pin, pin)
         return pin.split(".")[0]  # GND.1 -> GND
@@ -163,12 +170,14 @@ def placement_table(diagram: dict) -> str:
     """Melyik alkatrész melyik lába melyik próbapanel-lyukba kerül."""
     types = {p["id"]: p["type"] for p in diagram["parts"]}
     names = part_names(diagram["parts"])
+    several = sum(map(is_breadboard, types.values())) > 1
     holes: dict[str, list[str]] = {}
     for a, b, *_ in filter(is_bb_connection, diagram["connections"]):
         pid, pin = a.split(":", 1)
         bid, hole = b.split(":", 1)
+        board = f"{e(names[bid])}, " if several else ""
         holes.setdefault(pid, []).append(
-            f"{e(pin_label(types[pid], pin))} → <strong>{e(pin_label(types[bid], hole))}</strong>")
+            f"{e(pin_label(types[pid], pin))} → {board}<strong>{e(pin_label(types[bid], hole))}</strong>")
     if not holes:
         return ""
     rows = "".join(f"<tr><td>{e(names[pid])}</td><td>{', '.join(h)}</td></tr>" for pid, h in holes.items())
@@ -303,6 +312,7 @@ code,.chip,pre{font-family:var(--mono);font-size:.82em;font-variant-ligatures:no
 .figure-note{margin:0 0 16px;font-size:.85rem;color:var(--muted)}
 
 /* kód */
+.prog{margin:20px 0 6px;font-size:1rem}
 .codebox{margin:4px 0 0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .codebar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 8px 6px 14px;background:var(--paper);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.82rem;color:var(--muted)}
 .copy{font:inherit;font-family:var(--sans);font-weight:700;font-size:.85rem;padding:4px 10px;border:0;border-radius:6px;background:var(--cobalt-soft);color:var(--cobalt);cursor:pointer}
@@ -550,13 +560,34 @@ def page(title: str, body: str, base: str, scripts: str = "") -> str:
 """
 
 
-def zip_name(task: Path) -> str:
-    return f"{task.name}.zip"
+def programs(task: Path) -> list[tuple[str, Path]]:
+    """(név, .ino) párok: egy Arduinós feladatnál [("sketch", sketch.ino)], két Arduinósnál
+    almappánként egy (a SZEREPEK sorrendjében, pl. küldő, fogadó)."""
+    if (task / "sketch.ino").exists():
+        return [("sketch", task / "sketch.ino")]
+    progs = [(d.name, d / f"{d.name}.ino") for d in task.iterdir() if (d / f"{d.name}.ino").exists()]
+    order = list(SZEREPEK)
+    return sorted(progs, key=lambda np: (order.index(np[0]) if np[0] in order else len(order), np[0]))
+
+
+def zip_name(task: Path, prog: str = "sketch") -> str:
+    return f"{task.name}.zip" if prog == "sketch" else f"{task.name}-{prog}.zip"
+
+
+def zip_label(prog: str) -> str:
+    return "Wokwi-projekt" if prog == "sketch" else f"Wokwi – {SZEREPEK.get(prog, prog)}"
+
+
+def board_first(diagram: dict, board: str) -> dict:
+    """A Wokwi csak az első Arduinót szimulálja: a megadott Arduino kerül előre."""
+    first = [p for p in diagram["parts"] if p["id"] == board]
+    return {**diagram, "parts": first + [p for p in diagram["parts"] if p["id"] != board]}
 
 
 def task_row(task: Path, title: str, role: str | None, note: str | None) -> str:
-    btns = (f'<a class="btn" href="feladatok/{task.name}/">{ICON_OPEN}Feladat</a>'
-            f'<a class="btn" href="feladatok/{task.name}/{zip_name(task)}" download>{ICON_DL}Wokwi-projekt</a>')
+    btns = f'<a class="btn" href="feladatok/{task.name}/">{ICON_OPEN}Feladat</a>' + "".join(
+        f'<a class="btn" href="feladatok/{task.name}/{zip_name(task, prog)}" download>{ICON_DL}{zip_label(prog)}</a>'
+        for prog, _ in programs(task))
     role_html = f'<span class="role role-{role}">{"Órai" if role == "órai" else "Gyakorló"}</span>' if role else ""
     note_html = f'<span class="note">{e(note)}</span>' if note else ""
     return (f'<li class="task"><div class="task-name">{role_html}<span class="task-no">{number(task)}.</span>'
@@ -566,7 +597,6 @@ def task_row(task: Path, title: str, role: str | None, note: str | None) -> str:
 
 def task_page(task: Path, title: str, readme_html: str, lessons: list) -> str:
     diagram = json.loads((task / "diagram.json").read_text(encoding="utf-8"))
-    code = (task / "sketch.ino").read_text(encoding="utf-8")
 
     where = "".join(
         f'<li>{i}. tanegység ({"órai" if f["szerep"] == "órai" else "gyakorló"} feladat): {e(ora["cim"])}'
@@ -587,8 +617,20 @@ def task_page(task: Path, title: str, readme_html: str, lessons: list) -> str:
     else:
         wiring = f"{figure}<p>Ehhez a feladathoz nincs szükség külső bekötésre.</p>"
 
-    files = "".join(
-        f'<a class="btn" href="{f}" download>{ICON_DL}{f}</a>' for f in ZIPPED)
+    progs = programs(task)
+    if progs[0][0] == "sketch":
+        files = "".join(f'<a class="btn" href="{f}" download>{ICON_DL}{f}</a>' for f in ZIPPED)
+    else:
+        files = f'<a class="btn" href="diagram.json" download>{ICON_DL}diagram.json</a>'
+    zips = "".join(f'<a class="btn" href="{zip_name(task, prog)}" download>{ICON_DL}{zip_label(prog)} (.zip)</a>'
+                   for prog, _ in progs)
+    codes = ""
+    for prog, ino in progs:
+        path = "sketch.ino" if prog == "sketch" else f"{prog}/{ino.name}"
+        head = "" if prog == "sketch" else f'<h3 class="prog">{e(SZEREPEK.get(prog, prog).capitalize())} Arduino</h3>'
+        codes += (f'{head}<div class="codebox"><div class="codebar"><span>{e(path)}</span>'
+                  f'<button class="copy" type="button">Másolás</button></div>'
+                  f'{highlight_ino(ino.read_text(encoding="utf-8"))}</div>')
     body = (
         f'<main class="wrap"><a class="crumb" href="../../">← Vissza a tanegységekhez</a>'
         f'<header class="task-hero"><h1>{number(task)}. {e(title)}</h1>{where_html}{steps}</header>'
@@ -596,10 +638,7 @@ def task_page(task: Path, title: str, readme_html: str, lessons: list) -> str:
         f'<section class="section"><h2>Alkatrészek</h2><ul class="parts">{parts_list(diagram)}</ul></section>'
         f'<section class="section"><h2>Bekötés</h2>{wiring}</section>'
         f'<section class="section solution" id="mintamegoldas"><div class="section-head"><h2>Mintamegoldás</h2>'
-        f'<div class="actions"><a class="btn" href="{zip_name(task)}" download>{ICON_DL}Wokwi-projekt (.zip)</a>'
-        f'{files}</div></div>'
-        f'<div class="codebox"><div class="codebar"><span>sketch.ino</span>'
-        f'<button class="copy" type="button">Másolás</button></div>{highlight_ino(code)}</div></section>'
+        f'<div class="actions">{zips}{files}</div></div>{codes}</section>'
         "</main>")
     scripts = (f'<script src="{WOKWI_ELEMENTS}"></script>'
                '<script src="../../assets/bekotes.js"></script><script src="../../assets/kod.js"></script>')
@@ -633,9 +672,22 @@ def build():
         for f in PUBLISHED:
             if (task / f).exists():
                 shutil.copy2(task / f, dest / f)
-        with zipfile.ZipFile(dest / zip_name(task), "w", zipfile.ZIP_DEFLATED) as zf:
-            for f in ZIPPED:
-                zf.write(task / f, f"{name}/{f}")
+        diagram = json.loads((task / "diagram.json").read_text(encoding="utf-8"))
+        for prog, ino in programs(task):
+            if prog != "sketch":
+                (dest / prog).mkdir()
+                for f in (ino, ino.parent / "teszt.yaml"):
+                    if f.exists():
+                        shutil.copy2(f, dest / prog / f.name)
+            # a .zip Wokwi-projekt: sketch.ino + diagram.json (két Arduinónál a program Arduinója elöl)
+            zdir = name if prog == "sketch" else f"{name}-{prog}"
+            with zipfile.ZipFile(dest / zip_name(task, prog), "w", zipfile.ZIP_DEFLATED) as zf:
+                zf.write(ino, f"{zdir}/sketch.ino")
+                if prog == "sketch":
+                    zf.write(task / "diagram.json", f"{zdir}/diagram.json")
+                else:
+                    d = board_first(diagram, prog)
+                    zf.writestr(f"{zdir}/diagram.json", json.dumps(d, ensure_ascii=False, indent=2) + "\n")
         titles[name], readme_html = read_readme(task)
         (dest / "index.html").write_text(
             task_page(task, titles[name], readme_html, lessons_of.get(name, [])), encoding="utf-8")

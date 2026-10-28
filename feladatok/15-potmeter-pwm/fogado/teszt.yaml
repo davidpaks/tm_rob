@@ -1,0 +1,21 @@
+name: '15 – Potméter és PWM: fogadó'
+version: 1
+author: 'davidpaks'
+
+# A küldő Arduino helyett a szimuláció soros monitorán érkeznek az értékek. A kiírt fényerőt
+# és a LED anódját ellenőrzi; 0-nál és 255-nél a láb állandóan LOW, illetve HIGH.
+# Közbülső értéknél a láb gyorsan kapcsolgat (PWM), ott csak a kiírt értéket nézi.
+steps:
+  - delay: 200ms
+  - write-serial: "1023\r\n"
+  - wait-serial: 'Fényerő: 255'
+  - delay: 50ms
+  - expect-pin: { part-id: fogado, pin: '9', value: 1 }
+  - expect-pin: { part-id: led1, pin: 'A', value: 1 }
+  - write-serial: "512\r\n"
+  - wait-serial: 'Fényerő: 127'
+  - write-serial: "0\r\n"
+  - wait-serial: 'Fényerő: 0'
+  - delay: 50ms
+  - expect-pin: { part-id: fogado, pin: '9', value: 0 }
+  - expect-pin: { part-id: led1, pin: 'A', value: 0 }

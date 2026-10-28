@@ -1,0 +1,10 @@
+name: '14 – Szám küldése: küldő'
+version: 1
+author: 'davidpaks'
+
+# A küldött sorokat a szimuláció soros monitorán ellenőrzi.
+steps:
+  - wait-serial: '0'
+  - wait-serial: '1'
+  - wait-serial: '2'
+  - wait-serial: '3'
